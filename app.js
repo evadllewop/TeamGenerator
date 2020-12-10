@@ -10,97 +10,148 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+const teamMembers = [];
+
 const roleQuestion = [
     {
         type: "list",
         name: "role",
-        message: "what is your role?",
-        choices: ["Intern", "Engineer", "Manager"]
+        message: "What is this employee's role?",
+        choices: ["Intern", "Engineer", 'Done']
     }
 ];
 
 const internQs = [
     {
         name: "name",
-        message: "What is your name?",
+        message: "What is the intern's name?",
         type: "input"
+    },
+    {
+        name: 'id',
+        type: 'input',
+        message: 'what is  the intern id?'
     },
     {
         name: "email",
         type: "input",
-        message: "What is your email?"
+        message: "What is the intern's email?"
     },
     {
         name: "school",
         type: "input",
-        message: "Where did you graduate from college?"
+        message: "What school did the intern graduate from?"
     }
 ];
 
 const engineerQs = [
     {
         name: "name",
-        message: "What is your name?",
+        message: "What is the engineer's name?",
         type: "input"
     },
     {
-        name: "github",
-        type: "input",
-        message: "What is your github Username?"
+        name: 'id',
+        type: 'input',
+        message: 'what is  the engineer id?'
     },
     {
         name: "email",
         type: "input",
-        message: "What is your email?"
-    }
+        message: "What is the engineer's email?"
+    },
+    {
+        name: "github",
+        type: "input",
+        message: "What is the engineer's Github user name?"
+    },
+
 ];
 
 const managerQs = [
     {
         name: "name",
-        message: "What is your name?",
+        message: "What is the manager's name?",
         type: "input"
     },
     {
         name: "email",
         type: "input",
-        message: "What is your email?"
+        message: "What is the manager's email?"
+    },
+    {
+        name: 'id',
+        type: 'input',
+        message: 'what is  the manager id?'
     },
     {
         name: "office",
         type: "input",
-        message: "What is your office number?"
+        message: "What is the manager's office number?"
     }
 ];
 // // function to write README file
-// function writeToFile(fileName, data) {
-//     return fs.writeFile(path.join(process.cwd(), fileName), data, err => {
-//         if (err) {
-//             console.log(err);
-//         }
+function writeToFile(data) {
+    return fs.writeFile(outputPath, data, err => {
+        if (err) {
+            console.log(err);
+        }
 
-//         console.log("Your README.md file has been generated successfully")
-//     });
-// }
+        console.log("Your HTML file has been generated successfully")
+    });
+}
+
+function promptManager() {
+
+    inquirer.prompt(managerQs)
+
+        .then(mgrAnswers => {
+
+            console.log(mgrAnswers)
+            const manager = new Manager(mgrAnswers.name, mgrAnswers.email, mgrAnswers.id, mgrAnswers.office);
+            teamMembers.push(manager);
+            promptEmployees();
+        })
+        .catch(error => {
+            if (error.isTtyError) {
+                // Prompt couldn't be rendered in the current environment
+            } else {
+                // Something else when wrong
+            }
+
+
+        });
+}
+
 
 // function to initialize program
-function promptUser() {
+function promptEmployees() {
 
     inquirer.prompt(roleQuestion)
 
         .then(answers => {
             if (answers.role === "Intern") {
-                inquirer.prompt(internQs);
+                inquirer.prompt(internQs)
+                    .then(answers => {
+                        const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
+                        teamMembers.push(intern);
+                        promptEmployees()
+                    })
 
-            } if (answers.role === "Engineer") {
-                inquirer.prompt(engineerQs);
-
-            } if (answers.role === "Manager") {
-                inquirer.prompt(managerQs);
             }
 
-            // Use user feedback for... whatever!!
-            // writeToFile('README.md', generateMarkdown(answers))
+            if (answers.role === "Engineer") {
+                inquirer.prompt(engineerQs)
+                    .then(answers => {
+                        const engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
+                        teamMembers.push(engineer);
+                        promptEmployees()
+                    })
+            }
+            if (answers.role === 'build') {
+                console.log(teamMembers)
+                writeToFile(render(teamMembers))
+            }
         })
         .catch(error => {
             if (error.isTtyError) {
@@ -113,7 +164,7 @@ function promptUser() {
 
 
 // function call to initialize program
-promptUser();
+promptManager();
 
 
 
