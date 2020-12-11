@@ -1,0 +1,33 @@
+
+body{
+  background-color: #f5f5f5;
+}
+
+.jumbotron {
+    text-align: center;
+    background-color: white;
+    color: #42596F;
+    border-radius: 0;
+    /* border-bottom: 10px solid black; */
+    box-shadow: 0 2px 10px -6px black;
+  }
+
+  .card{
+
+    margin: 10px;
+    box-shadow: 0 2px 6px -6px black;
+  }
+
+  .card-title {
+    font-size: 22px;
+    font-weight: 200;
+  }
+
+
+  .card-header{
+
+    color: white;
+    background-color: #42596F;
+    box-shadow: 0 2px 10px -6px black;
+  }
+  
