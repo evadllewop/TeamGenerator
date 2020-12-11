@@ -1,26 +1,29 @@
+
+//create variables for all of the 'requires'
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
-
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
-
 const render = require("./lib/htmlRenderer");
 
+// empty array that will contain the team members
 const teamMembers = [];
 
+// prompt user for type of role
 const roleQuestion = [
     {
         type: "list",
         name: "role",
         message: "What is this employee's role?",
-        choices: ["Intern", "Engineer", 'Done']
+        choices: ["Intern", "Engineer", 'No more employees']
     }
 ];
 
+// object array that contains the 'intern' questions
 const internQs = [
     {
         name: "name",
@@ -30,7 +33,7 @@ const internQs = [
     {
         name: 'id',
         type: 'input',
-        message: 'what is  the intern id?'
+        message: "What is the intern's id?"
     },
     {
         name: "email",
@@ -44,6 +47,7 @@ const internQs = [
     }
 ];
 
+// object array that contains the 'engineer' questions
 const engineerQs = [
     {
         name: "name",
@@ -53,7 +57,7 @@ const engineerQs = [
     {
         name: 'id',
         type: 'input',
-        message: 'what is  the engineer id?'
+        message: "What is the engineer's id?"
     },
     {
         name: "email",
@@ -68,6 +72,7 @@ const engineerQs = [
 
 ];
 
+// object array that contains the 'manager' questions
 const managerQs = [
     {
         name: "name",
@@ -75,14 +80,14 @@ const managerQs = [
         type: "input"
     },
     {
+        name: 'id',
+        type: 'input',
+        message: "What is the manager's id?"
+    },
+    {
         name: "email",
         type: "input",
         message: "What is the manager's email?"
-    },
-    {
-        name: 'id',
-        type: 'input',
-        message: 'what is  the manager id?'
     },
     {
         name: "office",
@@ -90,25 +95,24 @@ const managerQs = [
         message: "What is the manager's office number?"
     }
 ];
-// // function to write README file
+
+// // function to write 'team.html' file to the 'output' folder
 function writeToFile(data) {
     return fs.writeFile(outputPath, data, err => {
         if (err) {
             console.log(err);
         }
-
         console.log("Your HTML file has been generated successfully")
     });
 }
 
+// function to prompt user with 'manager' questions
 function promptManager() {
-
     inquirer.prompt(managerQs)
 
         .then(mgrAnswers => {
-
-            console.log(mgrAnswers)
-            const manager = new Manager(mgrAnswers.name, mgrAnswers.email, mgrAnswers.id, mgrAnswers.office);
+            // console.log(mgrAnswers)
+            const manager = new Manager(mgrAnswers.name, mgrAnswers.id, mgrAnswers.email, mgrAnswers.office);
             teamMembers.push(manager);
             promptEmployees();
         })
@@ -118,18 +122,16 @@ function promptManager() {
             } else {
                 // Something else when wrong
             }
-
-
         });
 }
 
 
-// function to initialize program
+// function to prompt user with employee questions
 function promptEmployees() {
-
     inquirer.prompt(roleQuestion)
-
         .then(answers => {
+
+            // if user chooses 'intern', prompt questions, create new 'intern' and push result to 'teamMembers' array
             if (answers.role === "Intern") {
                 inquirer.prompt(internQs)
                     .then(answers => {
@@ -137,9 +139,8 @@ function promptEmployees() {
                         teamMembers.push(intern);
                         promptEmployees()
                     })
-
             }
-
+            // if user chooses 'engineer', prompt questions, create new 'engineer' and push result to 'teamMembers' array
             if (answers.role === "Engineer") {
                 inquirer.prompt(engineerQs)
                     .then(answers => {
@@ -148,7 +149,9 @@ function promptEmployees() {
                         promptEmployees()
                     })
             }
-            if (answers.role === 'build') {
+
+            // if user chooses 'No more employees', write 'team.html' file
+            if (answers.role === 'No more employees') {
                 console.log(teamMembers)
                 writeToFile(render(teamMembers))
             }
