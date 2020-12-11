@@ -35,5 +35,5 @@
   ![Dave Powell](./images/dPowell.png "Dave Powell")
 
   * [Github Profile](https://github.com/evadllewop)
-  * [Project Repo](https://github.com/evadllewop/READMEGenerator)
+  * [Project Repo](https://github.com/evadllewop/TeamGenerator)
 
